@@ -1,0 +1,4 @@
+Flask==3.0.3
+SQLAlchemy
+Flask-Login
+Flask-WTF

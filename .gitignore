@@ -1,0 +1,16 @@
+```bash
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.venv/
+
+# Database
+instance/*.db
+
+# OS / IDE files
+.DS_Store
+.vscode/
