@@ -6,19 +6,32 @@ bp = Blueprint("main", __name__)
 
 DB_PATH = os.path.join(os.path.dirname(__file__), "..", "instance", "bestlink.db")
 
-@bp.route("/")
+@bp.route("/", methods=["GET"])
 def index():
+    query = request.args.get("q", "")
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("""
-        SELECT books.id, books.title, books.author, books.price, categories.name
-        FROM books
-        LEFT JOIN categories ON books.category_id = categories.id
-        ORDER BY books.title
-    """)
+
+    if query:
+        c.execute("""
+            SELECT books.id, books.title, books.author, books.price, books.stock, categories.name
+            FROM books
+            LEFT JOIN categories ON books.category_id = categories.id
+            WHERE books.title LIKE ? OR books.author LIKE ?
+            ORDER BY books.title
+        """, (f"%{query}%", f"%{query}%"))
+    else:
+        c.execute("""
+            SELECT books.id, books.title, books.author, books.price, books.stock, categories.name
+            FROM books
+            LEFT JOIN categories ON books.category_id = categories.id
+            ORDER BY books.title
+        """)
+
     books = c.fetchall()
     conn.close()
-    return render_template("index.html", books=books)
+    return render_template("index.html", books=books, query=query)
+
 
 @bp.route("/add", methods=["GET", "POST"])
 def add_book():

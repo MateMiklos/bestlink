@@ -17,16 +17,19 @@ def create_app():
                 name TEXT UNIQUE NOT NULL
             )
         """)
+
         c.execute("""
             CREATE TABLE IF NOT EXISTS books (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 author TEXT,
                 price REAL,
+                stock INTEGER DEFAULT 0,           -- NEW COLUMN
                 category_id INTEGER,
                 FOREIGN KEY (category_id) REFERENCES categories (id)
             )
         """)
+
         conn.commit()
 
     # Register routes
