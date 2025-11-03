@@ -1,19 +1,36 @@
-# Python
+# Byte-compiled / cache files
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
+*$py.class
 
-# Environment
+# Virtual environment
+venv/
+.env/
 env/
 .venv/
-venv/
-*.env
 
-# Flask instance folder (local database)
-instance/*.db
+# Database files
+instance/
+*.db
 
-# IDE / OS files
+# Flask instance folder (auto-created)
+*.sqlite3
+
+# IDE and editor files
 .vscode/
-.DS_Store
 .idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# Environment variables
+.env
