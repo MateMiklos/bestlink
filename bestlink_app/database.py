@@ -159,6 +159,54 @@ def create_products_table():
 
     conn.commit()
     conn.close()
+    
+def create_stock_table():
+    """Create the stock table with links to products."""
+    conn = get_connection()
+    c = conn.cursor()
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS stock (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            product_id INTEGER NOT NULL,
+            local_stock INTEGER DEFAULT 0,
+            gardners_stock INTEGER DEFAULT 0,
+            FOREIGN KEY (product_id) REFERENCES products(id)
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+def add_product(isbn, product_type, title, author, category, publisher, supplier,
+                publication_date, currency, original_price, sale_price, price_in_huf):
+    """Add a new product and initialize its stock entry."""
+    conn = get_connection()
+    c = conn.cursor()
+
+    # 1️⃣ Insert product
+    c.execute("""
+        INSERT INTO products (
+            isbn, product_type, title, author, category, publisher, supplier,
+            publication_date, currency, original_price, sale_price, price_in_huf
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        isbn, product_type, title, author, category, publisher, supplier,
+        publication_date, currency, original_price, sale_price, price_in_huf
+    ))
+
+    product_id = c.lastrowid  # get the ID of the newly inserted product
+
+    # 2️⃣ Create matching stock entry
+    c.execute("""
+        INSERT INTO stock (product_id, local_stock, gardners_stock)
+        VALUES (?, 0, 0)
+    """, (product_id,))
+
+    conn.commit()
+    conn.close()
+
+    return product_id
 
 def init_db():
     """Initialize all database tables."""
@@ -169,4 +217,4 @@ def init_db():
     create_publishers_table()
     create_suppliers_table()
     create_products_table()
-
+    create_stock_table()
