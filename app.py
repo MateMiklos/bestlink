@@ -1,13 +1,11 @@
 from flask import Flask
-from bestlink_app.database import init_db
+from bestlink_app.routes import bp as main_bp
+import os
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder=os.path.join("bestlink_app", "templates"))
+app.secret_key = "dev"
 
-@app.route("/")
-def index():
-    return "test"
+app.register_blueprint(main_bp)
 
 if __name__ == "__main__":
-    with app.app_context():
-        init_db()
     app.run(debug=True)

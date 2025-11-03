@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Product</title>
+</head>
+<body>
+    <h1>Add New Product</h1>
+
+    <form method="POST">
+        <label>ISBN:</label>
+        <input type="text" name="isbn"><br>
+
+        <label>Title:</label>
+        <input type="text" name="title" required><br>
+
+        <label>Author:</label>
+        <input type="text" name="author"><br>
+
+        <label>Product Type:</label>
+        <select name="product_type">
+            {% for id, name in product_types %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Category:</label>
+        <select name="category">
+            {% for id, name in categories %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Publisher:</label>
+        <select name="publisher">
+            {% for id, name in publishers %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Supplier:</label>
+        <select name="supplier">
+            {% for id, name in suppliers %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Publication Date:</label>
+        <input type="date" name="publication_date"><br>
+
+        <label>Currency:</label>
+        <select name="currency">
+            {% for id, name in currencies %}
+                <option value="{{ id }}">{{ name }}</option>
+            {% endfor %}
+        </select><br>
+
+        <label>Original Price:</label>
+        <input type="number" step="0.01" name="original_price"><br>
+
+        <label>Sale Price:</label>
+        <input type="number" step="0.01" name="sale_price"><br>
+
+        <label>Price in HUF:</label>
+        <input type="number" step="0.01" name="price_in_huf"><br>
+
+        <button type="submit">Add Product</button>
+    </form>
+</body>
+</html>
