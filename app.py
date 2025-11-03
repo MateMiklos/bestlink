@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return "Database test"
+    return "test"
 
 if __name__ == "__main__":
     with app.app_context():
