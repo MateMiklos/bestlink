@@ -35,6 +35,17 @@ def index():
 
     return render_template("index.html", products=products)
 
+def round_price(price: float) -> float:
+    """Round prices to .00 or .50 according to shop rules."""
+    base = int(price)
+    remainder = price - base
+
+    if remainder == 0:
+        return float(price)
+    elif remainder <= 0.49:
+        return base + 0.50
+    else:
+        return float(base + 1)
 
 @bp.route("/add_product", methods=["GET", "POST"])
 def add_product():
@@ -42,35 +53,49 @@ def add_product():
     c = conn.cursor()
 
     if request.method == "POST":
-        data = (
-            request.form["isbn"],
-            request.form["product_type"],
-            request.form["title"],
-            request.form["author"],
-            request.form["category"],
-            request.form["publisher"],
-            request.form["supplier"],
-            request.form["publication_date"],
-            request.form["currency"],
-            request.form["original_price"],
-            request.form["sale_price"],
-            request.form["price_in_huf"]
-        )
+        isbn = request.form["isbn"]
+        title = request.form["title"]
+        author = request.form["author"]
+        product_type = request.form["product_type"]
+        category = request.form["category"]
+        publisher = request.form["publisher"]
+        supplier = request.form["supplier"]
+        publication_date = request.form["publication_date"]
+        currency_id = request.form["currency"]
+        original_price = float(request.form["original_price"])
 
+        # 1️⃣ Calculate sale price (round up)
+        sale_price = round_price(original_price)
+
+        # 2️⃣ Get currency value (conversion rate)
+        c.execute("SELECT value FROM currency WHERE id = ?", (currency_id,))
+        rate_row = c.fetchone()
+        rate = rate_row[0] if rate_row else 1
+
+        # 3️⃣ Calculate price in HUF
+        price_in_huf = sale_price * rate
+
+        # 4️⃣ Insert product
         c.execute("""
             INSERT INTO products (
                 isbn, product_type, title, author, category, publisher,
                 supplier, publication_date, currency, original_price,
                 sale_price, price_in_huf
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, data)
+        """, (
+            isbn, product_type, title, author, category, publisher,
+            supplier, publication_date, currency_id, original_price,
+            sale_price, price_in_huf
+        ))
 
+        # 5️⃣ Initialize stock
         product_id = c.lastrowid
         c.execute("INSERT INTO stock (product_id) VALUES (?)", (product_id,))
+
         conn.commit()
         conn.close()
 
-        flash("✅ Product added successfully!", "success")
+        flash(f"✅ Product '{title}' added successfully!", "success")
         return redirect(url_for("main.index"))
 
     # Dropdowns

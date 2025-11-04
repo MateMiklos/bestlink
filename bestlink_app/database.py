@@ -36,7 +36,7 @@ def create_product_type_table():
     conn.close()
 
 def create_currency_table():
-    """Create the currency table with fixed data."""
+    """Create the currency table with conversion rates."""
     conn = get_connection()
     c = conn.cursor()
 
@@ -44,18 +44,23 @@ def create_currency_table():
         CREATE TABLE IF NOT EXISTS currency (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT UNIQUE NOT NULL,
-            symbol TEXT
+            symbol TEXT,
+            value REAL DEFAULT 1
         )
     """)
 
     currencies = [
-        ("Euro", "€"),
-        ("Pound Sterling", "£"),
-        ("US Dollar", "$"),
-        ("Hungarian Forint", "Ft")
+        ("Hungarian Forint", "Ft", 1),
+        ("Euro", "€", 400),
+        ("Pound Sterling", "£", 600),
+        ("US Dollar", "$", 400)
     ]
 
-    c.executemany("INSERT OR IGNORE INTO currency (name, symbol) VALUES (?, ?)", currencies)
+    c.executemany(
+        "INSERT OR IGNORE INTO currency (name, symbol, value) VALUES (?, ?, ?)",
+        currencies
+    )
+
     conn.commit()
     conn.close()
 
